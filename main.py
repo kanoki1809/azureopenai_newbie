@@ -1,25 +1,32 @@
-import cv2
-import numpy as np
 import streamlit as st
-from camera_input_live import camera_input_live
+from google.colab import drive
 
-"# Streamlit camera input live Demo"
-"## Try holding a qr code in front of your webcam"
+# Kết nối với Drive
+drive.mount("/content/drive")
 
-image = camera_input_live()
+# Chuẩn bị mô hình
+model_path = "/content/drive/MyDrive/streamlit-models/trained_model.pth"
+model = torch.load(model_path)
+# Định nghĩa hàm xử lý ảnh
+def process_image(image):
+    # Chuyển đổi ảnh sang dạng tensor
+    image = torchvision.transforms.ToTensor()(e)
+    # Chuẩn hóa ảnh
+    image = torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(image)
+    # Đoán chữ trong ảnh
+    prediction = model(image).argmax(dim=1)
+    return prediction
 
+# Tạo ứng dụng Streamlit
+st.title("In chữ trong hình")
+
+# Cho phép người dùng tải lên ảnh
+image = st.file_uploader("Chọn ảnh")
+
+# Xử lý ảnh
 if image is not None:
-    st.image(image)
-    bytes_data = image.getvalue()
-    cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+    image = image.read()
+    prediction = process_image(image)
 
-    detector = cv2.QRCodeDetector()
-
-    data, bbox, straight_qrcode = detector.detectAndDecode(cv2_img)
-
-    if data:
-        st.write("# Found QR code")
-        st.write(data)
-        with st.expander("Show details"):
-            st.write("BBox:", bbox)
-            st.write("Straight QR code:", straight_qrcode)
+# Hiển thị kết quả
+st.write("Chữ trong ảnh là:", prediction)
