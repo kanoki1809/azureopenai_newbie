@@ -33,5 +33,5 @@ override_height=75,
 debounce_time=0)
 
 if result:
-if "GET_TEXT" in result:
-    st.write(result.get("GET_TEXT"))
+    if "GET_TEXT" in result:
+        st.write(result.get("GET_TEXT"))
