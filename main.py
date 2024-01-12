@@ -1,16 +1,13 @@
 import streamlit as st
-from google.colab import drive
-
-# Kết nối với Drive
-drive.mount("/content/drive")
+import torchvision.models as models
 
 # Chuẩn bị mô hình
-model_path = "/content/drive/MyDrive/streamlit-models/trained_model.pth"
-model = torch.load(model_path)
+model = models.resnet18(pretrained=True)
+
 # Định nghĩa hàm xử lý ảnh
 def process_image(image):
     # Chuyển đổi ảnh sang dạng tensor
-    image = torchvision.transforms.ToTensor()(e)
+    image = torchvision.transforms.ToTensor()(image)
     # Chuẩn hóa ảnh
     image = torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(image)
     # Đoán chữ trong ảnh
@@ -28,5 +25,5 @@ if image is not None:
     image = image.read()
     prediction = process_image(image)
 
-# Hiển thị kết quả
-st.write("Chữ trong ảnh là:", prediction)
+    # Hiển thị kết quả
+    st.write("Chữ trong ảnh là:", prediction)
